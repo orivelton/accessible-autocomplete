@@ -1,83 +1,36 @@
-Task 1:
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-```Typescript
-type Addresses = {
-  [key: string]: string | { address: keyof Addresses };
-};
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-task 2:
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-```typescript
-type Account = {
-  id: string
-  signer?: true
-  address?: keyof Addresses
-}
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-type Instructions = {
-  [key: string]: { accounts: Account[] }
-}
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-function instructions(input: {
-  addresses: Addresses
-  instructions: Instructions
-}) {
-  const { addresses, instructions: instructionsInput } = input
+## Learn More
 
-  const resolvedInstructions: Instructions = {}
+To learn more about Next.js, take a look at the following resources:
 
-  for (const key in instructionsInput) {
-    resolvedInstructions[key] = {
-      accounts: instructionsInput[key].accounts.map((account) => {
-        if (account.address) {
-          const addressValue = addresses[account.address]
-          if (typeof addressValue === 'string') {
-            return { ...account, address: addressValue }
-          } else {
-            return {
-              ...account,
-              address: resolveAddress(addresses, addressValue),
-            }
-          }
-        }
-        return account
-      }),
-    }
-  }
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-  return resolvedInstructions
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-  function resolveAddress(
-    addresses: Addresses,
-    address: keyof Addresses,
-  ): string {
-    const addressValue = addresses[address]
-    if (typeof addressValue === 'string') {
-      return addressValue
-    } else {
-      return resolveAddress(addresses, addressValue.address)
-    }
-  }
-}
-```
+## Deploy on Vercel
 
-Task 3:
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-```typescript
-type AccountsWithoutAddress<T extends Instructions> = {
-  [K in keyof T]: T[K] extends {
-    accounts: { id: infer ID; address?: undefined }[]
-  }
-    ? ID
-    : never
-}[keyof T]
-
-function getAccountsWithoutAddress(
-  input: { instructions: Instructions },
-  key: keyof typeof input,
-) {
-  const { instructions } = input
-  return instructions[key].accounts.filter((account) => account.signer)
-}
-```
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
