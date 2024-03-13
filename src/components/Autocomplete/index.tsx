@@ -42,8 +42,9 @@ export function Autocomplete() {
     <>
       <Command>
         <CommandInput
-          placeholder='Type a countrie name to search...'
+          placeholder='Enter a country name to search...'
           onValueChange={(e) => handleChangesQuery(e)}
+          autoFocus
         />
         {isLoading && <Loading />}
 
