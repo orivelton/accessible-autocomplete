@@ -1,38 +1,71 @@
-"use client";
+'use client'
 
 import {
   Command,
   CommandEmpty,
-  CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
-} from "@/components/ui/command";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-const queryClient = new QueryClient();
+} from '@/components/ui/command'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { Loading } from '../Loading'
 
 export function Autocomplete() {
+  const queryClient = useQueryClient()
+  const [queryString, setQueryString] = useState<string>('')
+
+  const getFromCache = (key: string) => {
+    return queryClient.getQueryData([key])
+  }
+
+  const { data, isLoading } = useQuery({
+    queryKey: [queryString],
+    queryFn: async ({ queryKey }) => {
+      const cache = getFromCache(queryString)
+      if (cache) return cache
+
+      const data = await await fetch(
+        `https://restcountries.com/v3.1/name/${queryKey}`,
+      )
+
+      return data.json()
+    },
+    enabled: !!queryString,
+  })
+
+  const handleChangesQuery = (name: string) => {
+    setQueryString(name)
+  }
+
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       <Command>
-        <CommandInput placeholder="Type a command or search..." />
+        <CommandInput
+          placeholder='Type a countrie name to search...'
+          onValueChange={(e) => handleChangesQuery(e)}
+        />
+        {isLoading && <Loading />}
+
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Suggestions">
-            <CommandItem>Calendar</CommandItem>
-            <CommandItem>Search Emoji</CommandItem>
-            <CommandItem>Calculator</CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="Settings">
-            <CommandItem>Profile</CommandItem>
-            <CommandItem>Billing</CommandItem>
-            <CommandItem>Settings</CommandItem>
-          </CommandGroup>
+          {data?.length &&
+            data.map(
+              ({
+                name: { common },
+                flag,
+              }: {
+                name: { common: string }
+                flag: string
+              }) => (
+                <CommandItem key={common}>{`${flag} - ${common}`}</CommandItem>
+              ),
+            )}
+
+          {queryString && !data?.length && (
+            <CommandEmpty>No results found.</CommandEmpty>
+          )}
         </CommandList>
       </Command>
-    </QueryClientProvider>
-  );
+    </>
+  )
 }
