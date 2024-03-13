@@ -8,7 +8,7 @@ export default function Home() {
     <ReactQueryProvider>
       <main className='flex flex-col items-center justify-between p-24'>
         <Badge>Accessible Autocomplete</Badge>
-        <Separator className='my-4' />
+        <Separator className='my-4 max-w-lg' />
         <Autocomplete />
       </main>
     </ReactQueryProvider>

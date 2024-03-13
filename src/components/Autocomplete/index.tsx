@@ -40,7 +40,7 @@ export function Autocomplete() {
 
   return (
     <>
-      <Command>
+      <Command className='max-w-lg'>
         <CommandInput
           placeholder='Enter a country name to search...'
           onValueChange={(e) => handleChangesQuery(e)}
